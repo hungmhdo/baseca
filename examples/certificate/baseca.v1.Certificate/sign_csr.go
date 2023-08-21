@@ -1,4 +1,4 @@
-package main
+package baseca
 
 import (
 	"crypto/x509"
@@ -8,7 +8,7 @@ import (
 	baseca "github.com/coinbase/baseca/pkg/client"
 )
 
-func main() {
+func SignCSR() {
 	client_id := "[CLIENT_ID]"
 	client_token := "[CLIENT_TOKEN]"
 

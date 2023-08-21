@@ -28,6 +28,7 @@ type CertificateClient interface {
 	ListCertificates(ctx context.Context, in *ListCertificatesRequest, opts ...grpc.CallOption) (*CertificatesParameter, error)
 	RevokeCertificate(ctx context.Context, in *RevokeCertificateRequest, opts ...grpc.CallOption) (*RevokeCertificateResponse, error)
 	OperationsSignCSR(ctx context.Context, in *OperationsSignRequest, opts ...grpc.CallOption) (*SignedCertificate, error)
+	QueryMetadata(ctx context.Context, in *QueryMetadataRequest, opts ...grpc.CallOption) (*QueryMetadataResult, error)
 }
 
 type certificateClient struct {
@@ -83,6 +84,15 @@ func (c *certificateClient) OperationsSignCSR(ctx context.Context, in *Operation
 	return out, nil
 }
 
+func (c *certificateClient) QueryMetadata(ctx context.Context, in *QueryMetadataRequest, opts ...grpc.CallOption) (*QueryMetadataResult, error) {
+	out := new(QueryMetadataResult)
+	err := c.cc.Invoke(ctx, "/baseca.v1.Certificate/QueryMetadata", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CertificateServer is the server API for Certificate service.
 // All implementations must embed UnimplementedCertificateServer
 // for forward compatibility
@@ -92,6 +102,7 @@ type CertificateServer interface {
 	ListCertificates(context.Context, *ListCertificatesRequest) (*CertificatesParameter, error)
 	RevokeCertificate(context.Context, *RevokeCertificateRequest) (*RevokeCertificateResponse, error)
 	OperationsSignCSR(context.Context, *OperationsSignRequest) (*SignedCertificate, error)
+	QueryMetadata(context.Context, *QueryMetadataRequest) (*QueryMetadataResult, error)
 	mustEmbedUnimplementedCertificateServer()
 }
 
@@ -113,6 +124,9 @@ func (UnimplementedCertificateServer) RevokeCertificate(context.Context, *Revoke
 }
 func (UnimplementedCertificateServer) OperationsSignCSR(context.Context, *OperationsSignRequest) (*SignedCertificate, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OperationsSignCSR not implemented")
+}
+func (UnimplementedCertificateServer) QueryMetadata(context.Context, *QueryMetadataRequest) (*QueryMetadataResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryMetadata not implemented")
 }
 func (UnimplementedCertificateServer) mustEmbedUnimplementedCertificateServer() {}
 
@@ -217,6 +231,24 @@ func _Certificate_OperationsSignCSR_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Certificate_QueryMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CertificateServer).QueryMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/baseca.v1.Certificate/QueryMetadata",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CertificateServer).QueryMetadata(ctx, req.(*QueryMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Certificate_ServiceDesc is the grpc.ServiceDesc for Certificate service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -243,6 +275,10 @@ var Certificate_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "OperationsSignCSR",
 			Handler:    _Certificate_OperationsSignCSR_Handler,
+		},
+		{
+			MethodName: "QueryMetadata",
+			Handler:    _Certificate_QueryMetadata_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

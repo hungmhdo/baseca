@@ -79,6 +79,27 @@ service Certificate {
   rpc ListCertificates (ListCertificatesRequest) returns (CertificatesParameter);
   rpc RevokeCertificate (RevokeCertificateRequest) returns (RevokeCertificateResponse);
   rpc OperationsSignCSR (OperationsSignRequest) returns (SignedCertificate);
+  rpc QueryMetadata (QueryMetadataRequest) returns (QueryMetadataResult);
+}
+
+message QueryMetadataRequest {
+  string serial_number = 1;
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+}
+
+message QueryMetadataResult {
+  string serial_number = 1;
+  CertificateMetadata metadata = 2;
+}
+
+message CertificateMetadata {
+  string common_name = 1;
+  string subject_alternative_name = 2;
+  google.protobuf.Timestamp end_time = 3;
+  google.protobuf.Timestamp start_time = 4;
+  string ca_serial_number = 5;
+  string certificate_authority_arn = 6;
 }
 
 message User {
